@@ -46,6 +46,8 @@ export default defineComponent({
   emits: ['meeting-slot-click'],
   setup(props, context) {
     const time = computed((): string => {
+      console.log(props);
+      
       const date = new Date(props.meetingSlot.date);
       const hours = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
       const AmOrPm = Number(hours) >= 12 ? 'PM' : 'AM';

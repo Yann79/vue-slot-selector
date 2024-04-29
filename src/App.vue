@@ -31,7 +31,7 @@ import slotsGenerator from '@/helpers/slotsGenerator';
 import type MeetingsDay from '@/interfaces/MeetingsDay.interface';
 import type MeetingSlot from '@/interfaces/MeetingSlot.interface';
 import type Time from '@/interfaces/Time.interface';
-import data from "./data.json";
+import data from './data.json';
 
 export default defineComponent({
   components: {
@@ -44,21 +44,47 @@ export default defineComponent({
     const date = ref(data[0].date);
     let i = 0;
 
+    const startDayFunction = (jsonData: any): Time[] => {
+      if (jsonData.slots.length === 1) {
+        if (['AM', 'AMPM'].includes(jsonData.slots[0].slot)) {
+          return [{
+            hours: 8,
+            minutes: 0,
+          },
+          {
+            hours: 12,
+            minutes: 0,
+          }];
+        } if (jsonData.slots[0].slot === 'PM') {
+          return [{
+            hours: 14,
+            minutes: 0,
+          },
+          {
+            hours: 18,
+            minutes: 0,
+          }];
+        }
+      } else {
+        return [{
+          hours: 8,
+          minutes: 0,
+        },
+        {
+          hours: 18,
+          minutes: 0,
+        }];
+      }
+    };
+
     const initMeetingsDays = () => {
-      const start = {
-        hours: 8,
-        minutes: 0,
-      };
-      const end = {
-        hours: 16,
-        minutes: 0,
-      };
       for (i; i < nbDaysToDisplay.value; i += 1) {
+        const horaireDay = startDayFunction(data[i]);
         const dateHoraire = data[i].date;
-        const startDay = start;
-        const endDay = end;
-        const time = data[i].slots.length === 1 ? 500 : 250;
-        meetingsDays.value.push(...slotsGenerator(dateHoraire, 1, startDay, endDay, time));
+        const startDay = horaireDay[0];
+        const endDay = horaireDay[1];
+        const time = 250;
+        meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time));
       }
       nbDaysToDisplay.value = i + 5;
     };
@@ -80,51 +106,37 @@ export default defineComponent({
     };
 
     const nextDate = (): void => {
-      const start: Time = {
-        hours: 8,
-        minutes: 0,
-      };
-      const end: Time = {
-        hours: 16,
-        minutes: 0,
-      };
       meetingsDays.value = [];
-      console.log("i " + i);
-      console.log("nbr "+nbDaysToDisplay.value);
+      console.log(`i ${i}`);
+      console.log(`nbr ${nbDaysToDisplay.value}`);
       nbDaysToDisplay.value = i + 5;
       for (i; i < nbDaysToDisplay.value; i += 1) {
+        const horaireDay = startDayFunction(data[i]);
         const dateHoraire = data[i].date;
-        const startDay = start;
-        const endDay = end;
-        const time = data[i].slots.length === 1 ? 480 : 240;
-        meetingsDays.value.push(...slotsGenerator(dateHoraire, 1, startDay, endDay, time));
+        const startDay = horaireDay[0];
+        const endDay = horaireDay[1];
+        const time = 250;
+        meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time));
       }
       date.value = data[i].date;
     };
 
     const previousDate = (): void => {
-      const start: Time = {
-        hours: 8,
-        minutes: 0,
-      };
-      const end: Time = {
-        hours: 16,
-        minutes: 0,
-      };
       meetingsDays.value = [];
       nbDaysToDisplay.value = i - 5;
       i -= 10;
-      console.log("nbr "+nbDaysToDisplay.value);
-      console.log("i " + i);
-      
+      console.log(`nbr ${nbDaysToDisplay.value}`);
+      console.log(`i ${i}`);
+
       for (i; i < nbDaysToDisplay.value; i += 1) {
+        const horaireDay = startDayFunction(data[i]);
         const dateHoraire = data[i].date;
-        const startDay = start;
-        const endDay = end;
-        const time = data[i].slots.length === 1 ? 600 : 300;
-        meetingsDays.value.push(...slotsGenerator(dateHoraire, 1, startDay, endDay, time));
+        const startDay = horaireDay[0];
+        const endDay = horaireDay[1];
+        const time = 250;
+        meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time));
       }
-      console.log("i apres " + i);
+      console.log(`i apres ${i}`);
 
       date.value = data[i].date;
     };

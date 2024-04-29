@@ -40,7 +40,7 @@ const disabledDate = (date1: string | Date, date2: string | Date): boolean => {
 const defaultCalendarOptions: RequiredCalendarOptions = {
   daysLabel: days,
   monthsLabel: months,
-  limit: 4,
+  limit: 2,
   spacing: 4,
   loadingLabel: 'Loading ...',
   disabledDate,
