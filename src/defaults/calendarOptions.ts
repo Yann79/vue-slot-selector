@@ -33,8 +33,19 @@ const decomposeDate = (date: Date): number => {
 
 const disabledDate = (date1: string | Date, date2: string | Date): boolean => {
   const actualDate = new Date(date1);
+  actualDate.setDate(actualDate.getDate() - 7);
   const today = new Date(date2);
   return decomposeDate(actualDate) <= decomposeDate(today);
+};
+
+const disabledDateAfter = (date1: string | Date, date2: string | Date): boolean => {
+  const actualDate = new Date(date1);
+  const today = new Date(date2);
+  console.log(actualDate);
+  console.log(today);
+  
+  
+  return decomposeDate(actualDate) >= decomposeDate(today);
 };
 
 const defaultCalendarOptions: RequiredCalendarOptions = {
@@ -44,6 +55,7 @@ const defaultCalendarOptions: RequiredCalendarOptions = {
   spacing: 4,
   loadingLabel: 'Loading ...',
   disabledDate,
+  disabledDateAfter,
 };
 
 export default defaultCalendarOptions;

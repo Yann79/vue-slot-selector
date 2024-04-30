@@ -55,7 +55,7 @@
           <button
             type="button"
             class="tab__pagination__button tab__pagination__button--right"
-            :disabled="loading"
+            :disabled="options.disabledDateAfter(date, lastDate) || loading"
             :class="cssClass.tabPaginationNextButton"
             @click="nextDate">
             <arrow-icon direction="right" />
@@ -63,7 +63,7 @@
         </slot>
       </div>
     </div>
-    <button type="button" class="button-1" v-on:click="selected()">Choisir</button>
+    <button type="button" class="button-1" v-on:click="selected" :disabled="isDisabled">Choisir</button>
 
   </div>
 </template>
@@ -108,6 +108,10 @@ export default defineComponent({
       type: Date,
       required: true,
     },
+    lastDate: {
+      type: Date,
+      required: true,
+    },
     meetingsDays: {
       type: Array as () => Array<MeetingsDay>,
       required: true,
@@ -139,6 +143,8 @@ export default defineComponent({
   ],
   setup(props, context) {
     const skip = ref(0);
+    const isDisabled = ref(true);
+
 
     const options = computed((): RequiredCalendarOptions => ({
       ...defaultCalendarOptions,
@@ -233,6 +239,7 @@ export default defineComponent({
           context.emit('change', undefined);
           context.emit('meeting-slot-unselected');
           context.emit('update:modelValue');
+          isDisabled.value = false;
           return;
         }
       }
@@ -247,6 +254,7 @@ export default defineComponent({
       previousDate,
       nextDate,
       meetingSlotClick,
+      isDisabled,
     });
 
     return {
@@ -262,12 +270,14 @@ export default defineComponent({
       previousDate,
       nextDate,
       meetingSlotClick,
+      isDisabled,
     };
   },
   methods: {
     selected() {
       console.log(this.modelValue.date);
     },
+  
   },
 });
 </script>

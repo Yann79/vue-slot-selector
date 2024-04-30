@@ -6,6 +6,7 @@ export interface CalendarOptions {
   loadingLabel?: string;
   // eslint-disable-next-line no-unused-vars
   disabledDate?:(date1: string | Date, date2: string | Date) => boolean;
+  disabledDateAfter?:(date1: string | Date, date2: string | Date) => boolean;
 }
 
 type Required<T> = {

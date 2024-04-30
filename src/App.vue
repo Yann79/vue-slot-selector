@@ -5,8 +5,9 @@
       ref="meetingSelector"
       class="meeting-selector"
       v-model="meeting"
-      :date="date"
-      :firstDate="firstDate"
+      :date="new Date(date)"
+      :firstDate="new Date(firstDate)"
+      :lastDate="new Date(lastDate)"
       :loading="false"
       :meetings-days="meetingsDays"
       @next-date="nextDate"
@@ -42,6 +43,7 @@ export default defineComponent({
     const meetingsDays: Ref<MeetingsDay[]> = ref([]);
     const nbDaysToDisplay = ref(5);
     const date = ref(data[0].date);
+    const isEnd: Ref<null | number> = ref(null);
     let i = 0;
 
     const startDayFunction = (jsonData: any): Time[] => {
@@ -93,23 +95,14 @@ export default defineComponent({
 
     const meetingSelector:Ref<unknown> = ref(null);
 
-    const up = (): void => {
-      (
-        meetingSelector.value as { previousMeetings: () => void }
-      ).previousMeetings();
-    };
-
-    const down = (): void => {
-      (
-        meetingSelector.value as { nextMeetings: () => void }
-      ).nextMeetings();
-    };
-
     const nextDate = (): void => {
       meetingsDays.value = [];
-      console.log(`i ${i}`);
-      console.log(`nbr ${nbDaysToDisplay.value}`);
-      nbDaysToDisplay.value = i + 5;
+      if (i + 5 > data.length - 1) {
+        nbDaysToDisplay.value = data.length - 1;
+        isEnd.value = data.length - 1 - i;
+      } else {
+        nbDaysToDisplay.value = i + 5;
+      }
       for (i; i < nbDaysToDisplay.value; i += 1) {
         const horaireDay = startDayFunction(data[i]);
         const dateHoraire = data[i].date;
@@ -118,15 +111,21 @@ export default defineComponent({
         const time = 250;
         meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time));
       }
+      console.log(`nbr apres : ${nbDaysToDisplay.value}`);
+      console.log(`i apres ${i}`);
       date.value = data[i].date;
     };
 
     const previousDate = (): void => {
       meetingsDays.value = [];
-      nbDaysToDisplay.value = i - 5;
-      i -= 10;
-      console.log(`nbr ${nbDaysToDisplay.value}`);
-      console.log(`i ${i}`);
+      if (nbDaysToDisplay.value === data.length - 1 && isEnd.value !== null) {
+        nbDaysToDisplay.value -= isEnd.value;
+        i -= (5 + isEnd.value);
+        isEnd.value = null;
+      } else {
+        nbDaysToDisplay.value = i - 5;
+        i -= 10;
+      }
 
       for (i; i < nbDaysToDisplay.value; i += 1) {
         const horaireDay = startDayFunction(data[i]);
@@ -136,7 +135,8 @@ export default defineComponent({
         const time = 250;
         meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time));
       }
-      console.log(`i apres ${i}`);
+      console.log(`nbr previous :  ${nbDaysToDisplay.value}`);
+      console.log(`i previous : ${i}`);
 
       date.value = data[i].date;
     };
@@ -146,8 +146,6 @@ export default defineComponent({
       meetingsDays,
       date,
       meetingSelector,
-      up,
-      down,
       nextDate,
       previousDate,
     };
@@ -155,6 +153,7 @@ export default defineComponent({
   data() {
     return {
       firstDate: data[0].date,
+      lastDate: data[data.length - 1].date,
     };
   },
 });
