@@ -22,6 +22,7 @@
 import { defineComponent, computed } from 'vue';
 import type { PropType } from 'vue';
 import type MeetingSlot from '../interfaces/MeetingSlot.interface';
+import type MeetingsDay from '../interfaces/MeetingsDay.interface';
 
 export default defineComponent({
   name: 'meetingsDisplay',
@@ -29,6 +30,10 @@ export default defineComponent({
     meetingSlot: {
       type: Object as PropType<MeetingSlot>,
       required: true,
+    },
+    meetingsDay: {
+      type: Array,
+      default: null,
     },
     meetingSlotSelected: {
       type: [Array, Object, null] as PropType<MeetingSlot[] | MeetingSlot | null>,
@@ -48,8 +53,11 @@ export default defineComponent({
     const time = computed((): string => {
       const date = new Date(props.meetingSlot.date);
       const hours = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
-      const AmOrPm = Number(hours) >= 12 ? 'PM' : 'AM';
-      return AmOrPm;
+      const displayHoraire = Number(hours) >= 12 ? 'PM' : 'AM';
+      if (props.meetingSlot.AMorPM === 'ChangeAfter') {
+        return displayHoraire;
+      }
+      return props.meetingSlot.AMorPM;
     });
 
     const isMeetingSelected = computed(():boolean => {

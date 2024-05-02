@@ -15,6 +15,7 @@
       :meeting-empty-class="meetingEmptyClass"
       :meeting-slot="slot"
       :meeting-slot-selected="meetingSlotSelected"
+      :meetingsDay="meetingsDay.slots"
       @meeting-slot-click="meetingSlotClick"
       :key="index" />
   </div>
@@ -34,6 +35,10 @@ export default defineComponent({
     MeetingDisplay,
   },
   props: {
+    AMorPM: {
+      type: String,
+      required: true,
+    },
     meetingsDay: {
       type: Object as PropType<MeetingsDay>,
       default: null,

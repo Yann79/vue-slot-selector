@@ -46,25 +46,44 @@ export default defineComponent({
     const isEnd: Ref<null | number> = ref(null);
     let i = 0;
 
-    const startDayFunction = (jsonData: any): Time[] => {
+    const startDayFunction = (jsonData: any): any[] => {
       if (jsonData.slots.length === 1) {
-        if (['AM', 'AMPM'].includes(jsonData.slots[0].slot)) {
+        if (jsonData.slots[0].slot === 'AMPM') {
           return [{
             hours: 8,
             minutes: 0,
           },
           {
+            hours: 10,
+            minutes: 0,
+          },
+          {
+            data: 'AMPM',
+          }];
+        }
+        if (jsonData.slots[0].slot === 'AM') {
+          return [{
+            hours: 10,
+            minutes: 0,
+          },
+          {
             hours: 12,
             minutes: 0,
+          },
+          {
+            data: 'AM',
           }];
         } if (jsonData.slots[0].slot === 'PM') {
           return [{
-            hours: 14,
+            hours: 16,
             minutes: 0,
           },
           {
             hours: 18,
             minutes: 0,
+          },
+          {
+            data: 'PM',
           }];
         }
       } else {
@@ -75,7 +94,7 @@ export default defineComponent({
         {
           hours: 18,
           minutes: 0,
-        }];
+        }, { data: 'ChangeAfter' }];
       }
     };
 
@@ -85,8 +104,9 @@ export default defineComponent({
         const dateHoraire = data[i].date;
         const startDay = horaireDay[0];
         const endDay = horaireDay[1];
+        const AMorPM = horaireDay[2].data;
         const time = 250;
-        meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time));
+        meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time, AMorPM));
       }
       nbDaysToDisplay.value = i + 5;
     };
@@ -109,10 +129,9 @@ export default defineComponent({
         const startDay = horaireDay[0];
         const endDay = horaireDay[1];
         const time = 250;
-        meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time));
+        const AMorPM = horaireDay[2].data;
+        meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time, AMorPM));
       }
-      console.log(`nbr apres : ${nbDaysToDisplay.value}`);
-      console.log(`i apres ${i}`);
       date.value = data[i].date;
     };
 
@@ -133,11 +152,9 @@ export default defineComponent({
         const startDay = horaireDay[0];
         const endDay = horaireDay[1];
         const time = 250;
-        meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time));
+        const AMorPM = horaireDay[2].data;
+        meetingsDays.value.push(...slotsGenerator(new Date(dateHoraire), 1, startDay, endDay, time, AMorPM));
       }
-      console.log(`nbr previous :  ${nbDaysToDisplay.value}`);
-      console.log(`i previous : ${i}`);
-
       date.value = data[i].date;
     };
 

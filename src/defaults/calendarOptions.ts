@@ -41,10 +41,6 @@ const disabledDate = (date1: string | Date, date2: string | Date): boolean => {
 const disabledDateAfter = (date1: string | Date, date2: string | Date): boolean => {
   const actualDate = new Date(date1);
   const today = new Date(date2);
-  console.log(actualDate);
-  console.log(today);
-  
-  
   return decomposeDate(actualDate) >= decomposeDate(today);
 };
 

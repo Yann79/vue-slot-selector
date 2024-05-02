@@ -77,16 +77,18 @@ function roundToClosestTime(date, interval) {
  * @param {Number} interval - Interval between two meetings (minutes)
  * @param {Time} startTime - startTime of the meetings
  * @param {Time} endTime - endTime of the meetings
+ * @param {string} AMorPM - AMORPM
  * @param {number} randomSlotsToDelete - Number of slots to delete randomly
  * @return {MeetingSlot[]} - A list of meetings
  */
-function generateSlots(start, end, interval, randomSlotsToDelete) {
+function generateSlots(start, end, interval, AMorPM, randomSlotsToDelete) {
   let startStamp = start.getTime();
   const endStamp = end.getTime();
   const slots = [];
   for (;startStamp <= endStamp; startStamp += interval * 60000) {
     const slot = {
       date: new Date(startStamp),
+      AMorPM : AMorPM,
     };
     slots.push(slot);
   }
@@ -105,7 +107,7 @@ function generateSlots(start, end, interval, randomSlotsToDelete) {
  * @param {Time} endTime - endTime of the meetings
  * @return {MeetingSlot} - A meetingSlot returned
  */
-function generateFirstDate(date, interval, startTime, endTime) {
+function generateFirstDate(date, interval, startTime, endTime, AMorPM) {
   let start;
   if (formatingDate(date) <= formatingDate(new Date())) {
     start = roundToClosestTime(date, interval);
@@ -116,7 +118,7 @@ function generateFirstDate(date, interval, startTime, endTime) {
     start = setTime(date, startTime);
   }
   const end = setTime(date, endTime);
-  const slots = generateSlots(start, end, interval);
+  const slots = generateSlots(start, end, interval, AMorPM);
   return {
     date,
     slots,
@@ -133,28 +135,24 @@ function generateFirstDate(date, interval, startTime, endTime) {
  * @param {number} randomSlotsToDelete - Number of slots to delete randomly
  * @return {MeetingSlot[]} - list of slots
  */
-function generateDays(date, nbDays, startTime, endTime, interval, randomSlotsToDelete = 0) {
+function generateDays(date, nbDays, startTime, endTime, interval, AMorPM, randomSlotsToDelete = 0) {
   const days = [];
-  days.push(generateFirstDate(date, interval, startTime, endTime));
+  days.push(generateFirstDate(date, interval, startTime, endTime, AMorPM));
   // Set to second Day
   const startingDay = new Date(date);
   for (let i = 1; i < nbDays; i += 1) {
     startingDay.setDate(startingDay.getDate() + 1);
     const slotsDate = new Date(startingDay);
-    /**
-     * Use this to not display sunday and saturday
-     * if (slotsDate.getDay() === 0 || slotsDate.getDay() === 6) {
-     *   i -= 1;
-     * } else {
-     */
     const startDate = setTime(slotsDate, startTime);
     const endDate = setTime(slotsDate, endTime);
     const slots = generateSlots(
       startDate,
       endDate,
       interval,
+      AMorPM,
       randomSlotsToDelete,
     );
+
     const meetingsDay = {
       date: new Date(startingDay),
       slots,

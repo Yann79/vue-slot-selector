@@ -46,14 +46,18 @@ function generateSlots(
   start: Date,
   end: Date,
   interval: number,
+  AMorPM: string,
   randomSlotsToDelete = 0,
 ): MeetingSlot[] {
   let startStamp: number = start.getTime();
   const endStamp: number = end.getTime();
   const slots: MeetingSlot[] = [];
+  console.log("ifsuqhfpsqiufhs" + AMorPM);
+  
   for (;startStamp <= endStamp; startStamp += interval * 60000) {
     const slot: MeetingSlot = {
       date: new Date(startStamp),
+      AMorPM : AMorPM,
     };
     slots.push(slot);
   }
@@ -69,6 +73,7 @@ function generateFirstDate(
   interval: number,
   startTime: Time,
   endTime: Time,
+  AMorPM: string,
 ):MeetingsDay {
   let start: Date;
   if (formatingDate(date) <= formatingDate(new Date())) {
@@ -77,7 +82,7 @@ function generateFirstDate(
     start = setTime(date, startTime);
   }
   const end: Date = setTime(date, endTime);
-  const slots: MeetingSlot[] = generateSlots(start, end, interval);
+  const slots: MeetingSlot[] = generateSlots(start, end, interval, AMorPM);
   return {
     date,
     slots,
@@ -90,10 +95,11 @@ function generateDays(
   startTime: Time,
   endTime: Time,
   interval: number,
+  AMorPM: string,
   randomSlotsToDelete = 0,
 ): MeetingsDay[] {
   const days: MeetingsDay[] = [];
-  days.push(generateFirstDate(date, interval, startTime, endTime));
+  days.push(generateFirstDate(date, interval, startTime, endTime, AMorPM));
   // Set to second Day
   const startingDay: Date = new Date(date);
   for (let i = 1; i < nbDays; i += 1) {
@@ -107,6 +113,7 @@ function generateDays(
         startDate,
         endDate,
         interval,
+        AMorPM,
         randomSlotsToDelete,
       );
       const meetingsDay: MeetingsDay = {

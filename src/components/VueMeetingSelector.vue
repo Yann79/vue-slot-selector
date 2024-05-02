@@ -63,7 +63,7 @@
         </slot>
       </div>
     </div>
-    <button type="button" class="button-1" v-on:click="selected" :disabled="isDisabled">Choisir</button>
+    <button type="button" class="button-1" v-on:click="selected()">Choisir</button>
 
   </div>
 </template>
@@ -74,6 +74,7 @@ import type { PropType } from 'vue';
 
 import '@/assets/css/icons-font.css';
 
+import axios from 'axios';
 import Meetings from './Meetings.vue';
 import DayDisplay from './DayDisplay.vue';
 import ArrowIcon from './ArrowIcon.vue';
@@ -144,7 +145,6 @@ export default defineComponent({
   setup(props, context) {
     const skip = ref(0);
     const isDisabled = ref(true);
-
 
     const options = computed((): RequiredCalendarOptions => ({
       ...defaultCalendarOptions,
@@ -275,9 +275,29 @@ export default defineComponent({
   },
   methods: {
     selected() {
-      console.log(this.modelValue.date);
+      if (this.modelValue !== null) {
+        const hours = this.modelValue.date.getHours() < 10 ? `0${this.modelValue.date.getHours()}` : this.modelValue.date.getHours();
+        const displayHoraire = Number(hours) >= 12 ? 'PM' : 'AM';
+        let horaireToSend = "";
+        if (this.modelValue.AMorPM === 'ChangeAfter') {
+           horaireToSend = displayHoraire;
+        } else {
+          horaireToSend = this.modelValue.AMorPM;
+        }
+        const date = new Date(this.modelValue.date);
+        const dateWithoutTime = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        axios.post('http://localhost:3000/api/meeting', {
+          date: dateWithoutTime,
+          horaire: horaireToSend,
+        })
+          .then((response: any) => {
+            console.log(response);
+          })
+          .catch((error: any) => {
+            console.log(error);
+          });
+      }
     },
-  
   },
 });
 </script>
